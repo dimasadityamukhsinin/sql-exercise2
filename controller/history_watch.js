@@ -1,56 +1,69 @@
 const connection = require("../config/database");
-const bcrypt = require("bcrypt");
+const History = require('../models/History_watch');
 
 module.exports = {
     listing : (req, res) => {
-        connection.query("select * from view_history_watch", (err, result) => {
-            if(err) {
-                res.send({
-                    message: "error",
-                    status: 500
-                })
-            }else {
-                res.send({
-                    message: "listing data",
-                    status: 200,
-                    result
-                })
-            }
-        });
+        History.findAll({
+            raw: true
+        })
+        .then(result => {
+            res.status(200).send({
+                message: "Get all data",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: error,
+                status: 500,
+            })
+        })
     },
     detail : (req,res) => {
         const {id} = req.params;
-        connection.query(`select * from history_watch where id_history= ${id}`, (err, result) => {
-            if(err) {
-                res.send({
-                    message: "error",
-                    status: 500
-                })
-            }else {
-                res.send({
-                    message: "detail data",
-                    status: 200,
-                    result
-                })
+        History.findOne({
+            where: {
+                id_history: id
             }
-        });
+        })
+        .then(result => {
+            res.status(200).send({
+                message: "Get data user",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: "Internal server error",
+                status: 500,
+            })
+        })
     },
     add : (req, res) => {
         const {id_movie, id_user, id_subscription} = req.body;
-        connection.query(`insert into history_watch values(null, ${id_movie}, ${id_user}, ${id_subscription})`, (err, result) => {
-            if(err) {
-                res.send({
-                    message: "error",
-                    status: 500
-                })
-            }else {
-                res.send({
-                    message: "added",
-                    status: 200,
-                    result
-                })
-            }
-        });
+        History.create({
+            id_movie : id_movie,
+            id_user : id_user,
+            id_subscription : id_subscription
+        })
+        .then(result => {
+            res.status(201).send({
+                message: "Success",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: "Internal server error",
+                status: 500,
+            })
+        })
     }
 }
 

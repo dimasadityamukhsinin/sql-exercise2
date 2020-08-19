@@ -1,39 +1,47 @@
-const connection = require("../config/database");
 const bcrypt = require("bcrypt");
+const User = require('../models/User');
 
 module.exports = {
     listing : (req, res) => {
-        connection.query("select * from users", (err, result) => {
-            if(err) {
-                res.send({
-                    message: "error",
-                    status: 500
-                })
-            }else {
-                res.send({
-                    message: "listing data",
-                    status: 200,
-                    result
-                })
-            }
-        });
+        User.findAll({
+            raw: true
+        })
+        .then(result => {
+            res.status(200).send({
+                message: "Get all data",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: error,
+                status: 500,
+            })
+        })
     },
     detail : (req,res) => {
         const {id} = req.params;
-        connection.query(`select * from users where id_user= ${id}`, (err, result) => {
-            if(err) {
-                res.send({
-                    message: "error",
-                    status: 500
-                })
-            }else {
-                res.send({
-                    message: "detail data",
-                    status: 200,
-                    result
-                })
+        User.findOne({
+            where: {
+                id_user: id
             }
-        });
+        })
+        .then(result => {
+            res.status(200).send({
+                message: "Get data user",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: "Internal server error",
+                status: 500,
+            })
+        })
     },
     add : (req, res) => {
         const {fullname, username, email, password, address} = req.body;
@@ -43,20 +51,26 @@ module.exports = {
                     message: `${error}`
                 })
             }else {
-                connection.query(`insert into users values(null, "${fullname}", "${username}", "${email}", "${hashedPassword}", "${address}" )`, (err, result) => {
-                    if(err) {
-                        res.send({
-                            message: "error",
-                            status: 500
-                        })
-                    }else {
-                        res.send({
-                            message: "added",
-                            status: 200,
-                            result
-                        })
-                    }
-                });
+                User.create({
+                    fullname : fullname,
+                    username : username,
+                    email : email,
+                    password : hashedPassword,
+                })
+                .then(result => {
+                    res.status(201).send({
+                        message: "Success",
+                        status: 200,
+                        result
+                    })
+                })
+                .catch(error => {
+                    console.log(error);
+                    res.status(500).send({
+                        message: "Internal server error",
+                        status: 500,
+                    })
+                })
             }
         })
     }
