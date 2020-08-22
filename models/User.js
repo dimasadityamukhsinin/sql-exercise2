@@ -23,7 +23,7 @@ const User = db.define('user', {
     password: {
         type: Sequelize.TEXT,
     },
-    addres : {
+    address : {
         type: Sequelize.TEXT
     }
 });

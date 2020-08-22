@@ -64,6 +64,28 @@ module.exports = {
                 status: 500,
             })
         })
+    },
+    deleteHistory : (req, res) => {
+        const {id} = req.params;
+        History.destroy({
+            where: {
+                id_history: id
+            }
+        })
+        .then(result => {
+            res.status(200).send({
+                message: "Success",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: "Internal server error",
+                status: 500,
+            })
+        })
     }
 }
 

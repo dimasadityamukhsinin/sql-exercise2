@@ -56,6 +56,7 @@ module.exports = {
                     username : username,
                     email : email,
                     password : hashedPassword,
+                    address: address
                 })
                 .then(result => {
                     res.status(201).send({
@@ -72,6 +73,56 @@ module.exports = {
                     })
                 })
             }
+        })
+    },
+    update : (req, res) => {
+        const {id} = req.params;
+        const {fullname, username, email, password, address} = req.body;
+        User.update({
+            fullname : fullname,
+            username : username,
+            email : email,
+            address: address
+        }, {
+            where: {
+              id_user: id
+            }
+        })
+        .then(result => {
+            res.status(201).send({
+                message: "Success",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: "Internal server error",
+                status: 500,
+            })
+        })
+    },
+    deleteUser : (req, res) => {
+        const {id} = req.params;
+        User.destroy({
+            where: {
+              id_user: id
+            }
+        })
+        .then(result => {
+            res.status(200).send({
+                message: "Success",
+                status: 200,
+                result
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({
+                message: "Internal server error",
+                status: 500,
+            })
         })
     }
 }
